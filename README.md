@@ -1,0 +1,1 @@
+O "Memória dos Gatinhos" é um jogo da memória construído com a biblioteca Pygame. Os principais objetivos deste projeto são praticar a leitura de documentações e aprender a utilizar bibliotecas. O desenvolvimento do jogo também permite aprimorar minhas habilidades em lógica de programação.
