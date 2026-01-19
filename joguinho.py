@@ -4,7 +4,7 @@ import random
 
 pygame.init()
 
-# - CARACTERÍSTICAS
+# Características e imagens
 
 altura = 650
 largura = 390
@@ -17,8 +17,6 @@ tela = pygame.display.set_mode((largura, altura))
 pygame.display.set_caption("Memória dos Gatinhos")
 fonte = pygame.font.SysFont(None, 50)
 
-# - IMAGENS
-
 imagens_gatinhos = []
 for i in range(1, 9):
     img = pygame.image.load(f'gatinho{i}.png').convert_alpha()
@@ -26,14 +24,14 @@ for i in range(1, 9):
     imagens_gatinhos.append(img)
 
 
-# - NÍVEL 
+# Escolha das fases 
 
 def escolher_nivel(nivel):
     if nivel == 1: return 2, 3, "Nível 1"
     elif nivel == 2: return 4, 3, "Nível 2"
     elif nivel == 3: return 4, 4, "Nível 3"
 
-# - LÓGICA 
+# Lógica 
 
 nivel = 1
 linhas, colunas, texto_nivel = escolher_nivel(nivel)
