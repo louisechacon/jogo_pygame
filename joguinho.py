@@ -8,8 +8,8 @@ pygame.init()
 altura_botao = 220
 largura_botao = 60
 x_inicial_botao = 80
-botao_facil   = pygame.Rect(x_inicial_botao, 270, altura_botao, largura_botao)
-botao_medio   = pygame.Rect(x_inicial_botao, 350, altura_botao, largura_botao)
+botao_facil = pygame.Rect(x_inicial_botao, 270, altura_botao, largura_botao)
+botao_medio = pygame.Rect(x_inicial_botao, 350, altura_botao, largura_botao)
 botao_dificil = pygame.Rect(x_inicial_botao, 430, altura_botao, largura_botao)
 
 altura = 650
