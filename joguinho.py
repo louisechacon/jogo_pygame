@@ -5,9 +5,6 @@ import sys
 
 pygame.init()
 
-
-# Características e imagens
-
 altura_botao = 220
 largura_botao = 60
 x_inicial_botao = 80
@@ -41,14 +38,10 @@ for i in range(1, 9):
     imagens_gatinhos.append(img)
 
 
-# Onde está a tela
-
 tela_menu = 0
 tela_jogo = 1
 estado_tela = tela_menu
 
-
-# Escolha das fases 
 
 def escolher_nivel(nivel):
     if nivel == 1:
@@ -59,8 +52,6 @@ def escolher_nivel(nivel):
         return 4, 4, "Nível 3"
 
 
-# Lógica 
-
 nivel = 1
 linhas = 0
 colunas = 0
@@ -69,6 +60,7 @@ texto_nivel = ""
 timer_espera = 0
 cartas_viradas = []
 cartas_escolhidas = []
+
 
 def iniciar_jogo(nivel):
 
@@ -82,6 +74,7 @@ def iniciar_jogo(nivel):
     cartas_escolhidas = [] 
 
     return linhas, colunas, texto_nivel, lista_ids, cartas_viradas, cartas_escolhidas
+
 
 def desenhar_menu():
     tela.fill((226, 139, 197))
@@ -100,6 +93,7 @@ def desenhar_menu():
     tela.blit(texto_facil, texto_facil.get_rect(center = botao_facil.center))
     tela.blit(texto_medio, texto_medio.get_rect(center = botao_medio.center))
     tela.blit(texto_dificil, texto_dificil.get_rect(center = botao_dificil.center))
+
 
 while True:
     tempo = pygame.time.get_ticks()
