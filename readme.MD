@@ -1,0 +1,1 @@
+O Cat's Memory é um jogo da memória em python com a temática de gatinhos e é construído com a biblioteca Pygame. Os principais objetivos no desenvolvimento deste projeto são: aprender a trabalhar com bibliotecas, praticar a leitura de documentações e praticar habilidades em lógica de programação.
