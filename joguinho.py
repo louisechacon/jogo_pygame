@@ -5,31 +5,38 @@ import sys
 
 pygame.init()
 
-altura_botao = 220
-largura_botao = 60
-x_inicial_botao = 80
-botao_facil = pygame.Rect(x_inicial_botao, 270, altura_botao, largura_botao)
-botao_medio = pygame.Rect(x_inicial_botao, 350, altura_botao, largura_botao)
-botao_dificil = pygame.Rect(x_inicial_botao, 430, altura_botao, largura_botao)
-
-altura = 650
-largura = 390
-x_inicial_carta = 25
-y_inicial_carta = 210
+altura_tela = 700
+largura_tela = 400
+x_inicial_carta = 30
+y_inicial_carta = 175
 tamanho_carta = 100
 espaco = 20
 
-tela = pygame.display.set_mode((largura, altura))
+altura_botao = 60
+largura_botao = 220
+x_inicial_botao = 90
+botao_facil = pygame.Rect(x_inicial_botao, 270, largura_botao, altura_botao)
+botao_medio = pygame.Rect(x_inicial_botao, 350, largura_botao, altura_botao)
+botao_dificil = pygame.Rect(x_inicial_botao, 430, largura_botao, altura_botao)
+
+nivel = 1 
+def escolher_carta(nivel):
+    if nivel == 3:
+        return 70
+    else:
+        return 100
+tamanho_carta = escolher_carta(nivel)
+
+tela = pygame.display.set_mode((largura_tela, altura_tela))
 pygame.display.set_caption("Cat's Memory")
 
 clock = pygame.time.Clock()
 
 pygame.font.init()
-fonte_nivel = pygame.font.SysFont(None, 50)
+fonte_nivel = pygame.font.SysFont(None, 60)
 fonte_botao = pygame.font.SysFont(None, 40)
 fonte_titulo = pygame.font.SysFont(None, 56)
 
-tamanho_carta = 100
 imagens_gatinhos = []
 
 for i in range(1, 9):
@@ -51,8 +58,6 @@ def escolher_nivel(nivel):
     elif nivel == 3:
         return 4, 4, "Nível 3"
 
-
-nivel = 1
 linhas = 0
 colunas = 0
 lista_ids = []
@@ -64,6 +69,8 @@ cartas_escolhidas = []
 
 def iniciar_jogo(nivel):
 
+    global tamanho_carta
+    tamanho_carta = escolher_carta(nivel)
     linhas, colunas, texto_nivel = escolher_nivel(nivel)
     num_cartas = linhas * colunas
 
@@ -71,7 +78,7 @@ def iniciar_jogo(nivel):
     random.shuffle(lista_ids)
 
     cartas_viradas = [False] * num_cartas
-    cartas_escolhidas = [] 
+    cartas_escolhidas = []
 
     return linhas, colunas, texto_nivel, lista_ids, cartas_viradas, cartas_escolhidas
 
@@ -80,7 +87,7 @@ def desenhar_menu():
     tela.fill((226, 139, 197))
 
     titulo = fonte_titulo.render("Cat's Memory", True, (201, 226, 249))
-    tela.blit(titulo, titulo.get_rect(center=(largura // 2, 180)))
+    tela.blit(titulo, titulo.get_rect(center=(largura_tela // 2, 180)))
 
     pygame.draw.rect(tela, (218, 232, 244), botao_facil, border_radius = 8)
     pygame.draw.rect(tela, (159,210,255), botao_medio, border_radius= 8)
@@ -153,18 +160,33 @@ while True:
     elif estado_tela == tela_jogo:
         tela.fill((218, 232, 244))
         texto_superficie = fonte_nivel.render(texto_nivel, True, (226, 139, 197))
-        tela.blit(texto_superficie, (120, 120))
+        tela.blit(texto_superficie, texto_superficie.get_rect(center=(largura_tela // 2, 120)))
 
-    for i in range(len(lista_ids)):
-        col = i % colunas
-        lin = i // colunas
-        x = x_inicial_carta + col * (tamanho_carta + espaco)
-        y = y_inicial_carta + lin * (tamanho_carta + espaco)
+        altura_botao_voltar = 40
+        largura_botao_voltar = 130
+        x_botao_voltar = 6
+        y_botao_voltar = 8
+        botao_voltar = pygame.Rect(x_botao_voltar, y_botao_voltar, largura_botao_voltar, altura_botao_voltar)
+        pygame.draw.rect(tela, (159,210,255),  botao_voltar, border_radius= 8)
+        texto_voltar = fonte_botao.render("Voltar", True, (255, 255, 255))
+        fonte_botao_voltar = pygame.font.SysFont(None, 15)
+        tela.blit(texto_voltar, texto_voltar.get_rect(center = botao_voltar.center))
 
-        if cartas_viradas[i]:
-            id_gatinho = lista_ids[i]
-            tela.blit(imagens_gatinhos[id_gatinho], (x, y))
-        else:
-            pygame.draw.rect(tela, (226, 139, 197), (x, y, tamanho_carta, tamanho_carta), border_radius=8)
+        if event.type == MOUSEBUTTONDOWN:
+            if botao_voltar.collidepoint(event.pos):
+                estado_tela = tela_menu
+
+        for i in range(len(lista_ids)):
+            col = i % colunas
+            lin = i // colunas
+            x = x_inicial_carta + col * (tamanho_carta + espaco)
+            y = y_inicial_carta + lin * (tamanho_carta + espaco)
+
+            if cartas_viradas[i]:
+                id_gatinho = lista_ids[i]
+                gatinho_redimensionado = pygame.transform.scale(imagens_gatinhos[id_gatinho], (tamanho_carta, tamanho_carta))
+                tela.blit(gatinho_redimensionado, (x, y))
+            else:
+                pygame.draw.rect(tela, (226, 139, 197), (x, y, tamanho_carta, tamanho_carta), border_radius=8)
 
     pygame.display.update()
