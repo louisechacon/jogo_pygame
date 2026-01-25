@@ -32,10 +32,10 @@ fonte_cronometro = pygame.font.SysFont(None, 30)
 
 
 imagens_gatinhos = []
+
 for i in range(1, 9):
     img = pygame.image.load(f'gatinho{i}.png').convert_alpha()
     imagens_gatinhos.append(img)
-
 
 tela_menu = 0
 tela_jogo = 1
@@ -54,9 +54,12 @@ def escolher_carta(nivel):
     return 70 if nivel == 3 else 100
 
 def escolher_nivel(nivel):
-    if nivel == 1: return 2, 3, "Nível 1"
-    elif nivel == 2: return 4, 3, "Nível 2"
-    elif nivel == 3: return 4, 4, "Nível 3"
+    if nivel == 1:
+        return 2, 3, "Nível 1"
+    elif nivel == 2:
+        return 4, 3, "Nível 2"
+    elif nivel == 3:
+        return 4, 4, "Nível 3"
 
 def iniciar_jogo(nivel):
 
@@ -94,6 +97,7 @@ def desenhar_menu():
 
 while True:
     tempo = pygame.time.get_ticks()
+    pos_mouse = pygame.mouse.get_pos()
     
     for event in pygame.event.get():
         if event.type == QUIT:
@@ -101,11 +105,16 @@ while True:
             sys.exit()
 
         if estado_tela == tela_menu and event.type == MOUSEBUTTONDOWN:
-            if botao_facil.collidepoint(event.pos): nivel = 1
-            elif botao_medio.collidepoint(event.pos): nivel = 2
-            elif botao_dificil.collidepoint(event.pos): nivel = 3
-            else: continue
-            iniciar_jogo(nivel)
+            if botao_facil.collidepoint(event.pos): 
+                nivel = 1
+            elif botao_medio.collidepoint(event.pos): 
+                nivel = 2
+            elif botao_dificil.collidepoint(event.pos): 
+                nivel = 3
+            else: 
+                continue
+
+            linhas, colunas, texto_nivel, lista_ids, cartas_viradas, cartas_escolhidas = iniciar_jogo(nivel)
             estado_tela = tela_jogo
 
         elif estado_tela == tela_jogo and event.type == MOUSEBUTTONDOWN:
@@ -115,12 +124,14 @@ while True:
 
             if len(cartas_escolhidas) < 2 and tempo > timer_espera:
                 for i in range(len(lista_ids)):
+
                     if cartas_resolvidas[i]: continue 
 
                     col = i % colunas
                     lin = i // colunas
                     x = x_inicial_carta + col * (tamanho_carta + espaco)
                     y = y_inicial_carta + lin * (tamanho_carta + espaco)
+
                     rect = pygame.Rect(x, y, tamanho_carta, tamanho_carta)
 
                     if rect.collidepoint(event.pos) and not cartas_viradas[i]:
@@ -137,6 +148,7 @@ while True:
         if id1 == id2:
             cartas_resolvidas[cartas_escolhidas[0]] = True
             cartas_resolvidas[cartas_escolhidas[1]] = True
+
         else:
             cartas_viradas[cartas_escolhidas[0]] = False
             cartas_viradas[cartas_escolhidas[1]] = False
@@ -146,25 +158,27 @@ while True:
 
     if estado_tela == tela_menu:
         desenhar_menu()
+
     elif estado_tela == tela_jogo:
+
         tela.fill((218, 232, 244))
-        txt_nivel = fonte_nivel.render(texto_nivel, True, (226, 139, 197))
-        tela.blit(txt_nivel, txt_nivel.get_rect(center=(largura_tela // 2, 80)))
+        texto_superficie = fonte_nivel.render(texto_nivel, True, (226, 139, 197))
+        tela.blit(texto_superficie, texto_superficie.get_rect(center=(largura_tela // 2, 80)))
 
         botao_voltar = pygame.Rect(6, 8, 130, 40)
         pygame.draw.rect(tela, (159, 210, 255), botao_voltar, border_radius=8)
-        txt_v = fonte_botao.render("Voltar", True, (255, 255, 255))
-        tela.blit(txt_v, txt_v.get_rect(center=botao_voltar.center))
-
+        texto_voltar = fonte_botao.render("Voltar", True, (255, 255, 255))
+        tela.blit(texto_voltar, texto_voltar.get_rect(center=botao_voltar.center))
 
         if len(cartas_escolhidas) == 2 and tempo <= timer_espera:
             tempo_restante = (timer_espera - tempo) / 1000
             tempo_visto = 1.0 - tempo_restante 
-            txt_cron = fonte_cronometro.render(f"{tempo_visto:.1f}s", True, (120, 40, 90))
-            tela.blit(txt_cron, txt_cron.get_rect(center=(largura_tela // 2, 640)))
+            texto_cronometro= fonte_cronometro.render(f"{tempo_visto:.1f}s", True, (120, 40, 90))
+            tela.blit(texto_cronometro, texto_cronometro.get_rect(center=(largura_tela // 2, 640)))
 
 
         for i in range(len(lista_ids)):
+
             if cartas_resolvidas[i]: continue 
 
             col = i % colunas
@@ -173,8 +187,9 @@ while True:
             y = y_inicial_carta + lin * (tamanho_carta + espaco)
 
             if cartas_viradas[i]:
-                img_gatinho = pygame.transform.scale(imagens_gatinhos[lista_ids[i]], (tamanho_carta, tamanho_carta))
-                tela.blit(img_gatinho, (x, y))
+                gatinho_redimensionado = pygame.transform.scale(imagens_gatinhos[lista_ids[i]], (tamanho_carta, tamanho_carta))
+                tela.blit(gatinho_redimensionado, (x, y))
+                
             else:
                 pygame.draw.rect(tela, (226, 139, 197), (x, y, tamanho_carta, tamanho_carta), border_radius=8)
 
