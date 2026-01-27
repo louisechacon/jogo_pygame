@@ -94,10 +94,10 @@ def desenhar_botao_voltar():
 
 def botao_novamente():
     botao_reiniciar = pygame.Rect(90, 580, 200, 60)
-    pygame.draw.rect(tela, (131, 40, 101), botao_reiniciar, border_radius= 8)
+    pygame.draw.rect(tela, (131, 40, 101), botao_reiniciar, border_radius = 8)
 
     texto = fonte_novamente.render("Jogar novamente", True, (255, 255, 255))
-    tela.blit(texto, texto.get_rect(center=botao_reiniciar.center))
+    tela.blit(texto, texto.get_rect(center = botao_reiniciar.center))
 
     return botao_reiniciar
 
