@@ -29,6 +29,8 @@ fonte_nivel = pygame.font.SysFont(None, 60)
 fonte_botao = pygame.font.SysFont(None, 40)
 fonte_titulo = pygame.font.SysFont(None, 56)
 fonte_cronometro = pygame.font.SysFont(None, 30)
+fonte_bom = pygame.font.SysFont(None, 60)
+fonte_novamente = pygame.font.SysFont(None, 30)
 
 
 imagens_gatinhos = []
@@ -39,6 +41,7 @@ for i in range(1, 9):
 
 tela_menu = 0
 tela_jogo = 1
+tela_final = 2
 estado_tela = tela_menu
 
 linhas = 0
@@ -80,6 +83,25 @@ def iniciar_jogo(nivel):
 
     return linhas, colunas, texto_nivel, lista_ids, cartas_viradas, cartas_escolhidas
 
+def desenhar_botao_voltar():
+    botao_voltar = pygame.Rect(6, 8, 130, 40)
+    pygame.draw.rect(tela, (218, 232, 244), botao_voltar, border_radius=8)
+
+    texto_voltar = fonte_botao.render("Voltar", True, (255, 255, 255))
+    tela.blit(texto_voltar, texto_voltar.get_rect(center=botao_voltar.center))
+
+    return botao_voltar
+
+def botao_novamente():
+    botao_reiniciar = pygame.Rect(90, 580, 200, 60)
+    pygame.draw.rect(tela, (131, 40, 101), botao_reiniciar, border_radius= 8)
+
+    texto = fonte_novamente.render("Jogar novamente", True, (255, 255, 255))
+    tela.blit(texto, texto.get_rect(center=botao_reiniciar.center))
+
+    return botao_reiniciar
+
+
 def desenhar_menu():
     tela.fill((226, 139, 197))
 
@@ -87,7 +109,7 @@ def desenhar_menu():
     tela.blit(titulo, titulo.get_rect(center=(largura_tela // 2, 180)))
 
     pygame.draw.rect(tela, (218, 232, 244), botao_facil, border_radius = 8)
-    pygame.draw.rect(tela, (159,210,255), botao_medio, border_radius= 8)
+    pygame.draw.rect(tela, (159, 210, 255), botao_medio, border_radius= 8)
     pygame.draw.rect(tela, (91, 155, 213),  botao_dificil, border_radius= 8)
 
     texto_facil = fonte_botao.render("Fácil", True, (120, 40, 90))
@@ -97,6 +119,17 @@ def desenhar_menu():
     tela.blit(texto_facil, texto_facil.get_rect(center = botao_facil.center))
     tela.blit(texto_medio, texto_medio.get_rect(center = botao_medio.center))
     tela.blit(texto_dificil, texto_dificil.get_rect(center = botao_dificil.center))
+
+def desenhar_final():
+    tela.fill((159,210,255))
+
+    texto_bom = fonte_bom.render("Muito bom!", True, (131, 40, 101))
+    tela.blit(texto_bom, texto_bom.get_rect(center=(largura_tela // 2, 95)))
+
+    patinha = pygame.image.load("imagens/patinha.png").convert_alpha()
+    patinha = pygame.transform.scale(patinha, (400, 400))
+    rect_patinha = patinha.get_rect(center=(largura_tela // 2, 350))
+    tela.blit(patinha, rect_patinha)
 
 while True:
     tempo = pygame.time.get_ticks()
@@ -121,7 +154,7 @@ while True:
             estado_tela = tela_jogo
 
         elif estado_tela == tela_jogo and event.type == MOUSEBUTTONDOWN:
-            botao_voltar = pygame.Rect(6, 8, 130, 40)
+            desenhar_botao_voltar()
             if botao_voltar.collidepoint(event.pos):
                 estado_tela = tela_menu
 
@@ -143,6 +176,10 @@ while True:
 
                         if len(cartas_escolhidas) == 2:
                             timer_espera = tempo + 1000
+        
+        elif estado_tela == tela_final and event.type == MOUSEBUTTONDOWN:
+            if botao_reiniciar.collidepoint(event.pos):
+                estado_tela = tela_menu
     
     if len(cartas_escolhidas) == 2 and tempo > timer_espera:
         id1 = lista_ids[cartas_escolhidas[0]]
@@ -151,6 +188,9 @@ while True:
         if id1 == id2:
             cartas_resolvidas[cartas_escolhidas[0]] = True
             cartas_resolvidas[cartas_escolhidas[1]] = True
+
+            if all(cartas_resolvidas):
+                estado_tela = tela_final
 
         else:
             cartas_viradas[cartas_escolhidas[0]] = False
@@ -166,7 +206,7 @@ while True:
 
         tela.fill((218, 232, 244))
         texto_superficie = fonte_nivel.render(texto_nivel, True, (226, 139, 197))
-        tela.blit(texto_superficie, texto_superficie.get_rect(center=(largura_tela // 2, 80)))
+        tela.blit(texto_superficie, texto_superficie.get_rect(center=(largura_tela // 2, 95)))
 
         botao_voltar = pygame.Rect(6, 8, 130, 40)
         pygame.draw.rect(tela, (159, 210, 255), botao_voltar, border_radius=8)
@@ -195,6 +235,10 @@ while True:
                 
             else:
                 pygame.draw.rect(tela, (226, 139, 197), (x, y, tamanho_carta, tamanho_carta), border_radius=8)
+
+    elif estado_tela == tela_final:
+        desenhar_final()
+        botao_reiniciar = botao_novamente()
 
     pygame.display.update()
     clock.tick(60)
