@@ -5,6 +5,11 @@ import sys
 
 pygame.init()
 
+tempo = 0
+recordes = [None, None, None]
+
+clock = pygame.time.Clock()
+
 altura_tela = 700
 largura_tela = 400
 x_inicial_carta = 30
@@ -15,14 +20,12 @@ espaco = 20
 altura_botao = 60
 largura_botao = 220
 x_inicial_botao = 90
-botao_facil = pygame.Rect(x_inicial_botao, 270, largura_botao, altura_botao)
-botao_medio = pygame.Rect(x_inicial_botao, 350, largura_botao, altura_botao)
-botao_dificil = pygame.Rect(x_inicial_botao, 430, largura_botao, altura_botao)
+botao_facil = pygame.Rect(x_inicial_botao, 315, largura_botao, altura_botao)
+botao_medio = pygame.Rect(x_inicial_botao, 405, largura_botao, altura_botao)
+botao_dificil = pygame.Rect(x_inicial_botao, 485, largura_botao, altura_botao)
 
 tela = pygame.display.set_mode((largura_tela, altura_tela))
 pygame.display.set_caption("Cat's Memory")
-
-clock = pygame.time.Clock()
 
 pygame.font.init()
 fonte_nivel = pygame.font.SysFont(None, 60)
@@ -31,7 +34,8 @@ fonte_titulo = pygame.font.SysFont(None, 56)
 fonte_cronometro = pygame.font.SysFont(None, 30)
 fonte_bom = pygame.font.SysFont(None, 60)
 fonte_novamente = pygame.font.SysFont(None, 30)
-
+fonte_recordes = pygame.font.SysFont(None, 30)
+fonte_pontuacoes = pygame.font.SysFont(None, 40)
 
 imagens_gatinhos = []
 
@@ -39,11 +43,25 @@ for i in range(1, 9):
     img = pygame.image.load(f'imagens/gatinho{i}.png').convert_alpha()
     imagens_gatinhos.append(img)
 
+logo_img = pygame.image.load("imagens/logo.png").convert_alpha()
+logo_img = pygame.transform.smoothscale(logo_img, (230, 230))
+logo_rect = logo_img.get_rect(center=(largura_tela // 2, 170))
+
+medalha_img = pygame.image.load("imagens/medalha.png").convert_alpha()
+medalha_img = pygame.transform.scale(medalha_img, (50, 50))
+medalha_rect = medalha_img.get_rect(topleft=(8, 215))
+
+recordes_img = pygame.image.load("imagens/recordes.png").convert_alpha()
+recordes_img = pygame.transform.smoothscale(recordes_img, (250, 250))
+recordes_rect = recordes_img.get_rect(center=(largura_tela // 2, 350))
+
 tela_menu = 0
 tela_jogo = 1
 tela_final = 2
+tela_recordes = 3
 estado_tela = tela_menu
 
+nivel = 1
 linhas = 0
 colunas = 0
 lista_ids = []
@@ -83,9 +101,9 @@ def iniciar_jogo(nivel):
 
     return linhas, colunas, texto_nivel, lista_ids, cartas_viradas, cartas_escolhidas
 
-def desenhar_botao_voltar():
+def desenhar_botao_voltar(cor):
     botao_voltar = pygame.Rect(6, 8, 130, 40)
-    pygame.draw.rect(tela, (218, 232, 244), botao_voltar, border_radius=8)
+    pygame.draw.rect(tela, (cor), botao_voltar, border_radius=8)
 
     texto_voltar = fonte_botao.render("Voltar", True, (255, 255, 255))
     tela.blit(texto_voltar, texto_voltar.get_rect(center=botao_voltar.center))
@@ -101,12 +119,8 @@ def botao_novamente():
 
     return botao_reiniciar
 
-
 def desenhar_menu():
     tela.fill((226, 139, 197))
-
-    titulo = fonte_titulo.render("Cat's Memory", True, (201, 226, 249))
-    tela.blit(titulo, titulo.get_rect(center=(largura_tela // 2, 180)))
 
     pygame.draw.rect(tela, (218, 232, 244), botao_facil, border_radius = 8)
     pygame.draw.rect(tela, (159, 210, 255), botao_medio, border_radius= 8)
@@ -116,9 +130,13 @@ def desenhar_menu():
     texto_medio = fonte_botao.render("Médio", True, (120, 40, 90))
     texto_dificil = fonte_botao.render("Difícil", True, (120, 40, 90))
 
+    tela.blit(logo_img, logo_rect)
+
     tela.blit(texto_facil, texto_facil.get_rect(center = botao_facil.center))
     tela.blit(texto_medio, texto_medio.get_rect(center = botao_medio.center))
     tela.blit(texto_dificil, texto_dificil.get_rect(center = botao_dificil.center))
+
+    tela.blit(medalha_img, medalha_rect)
 
 def desenhar_final():
     tela.fill((159,210,255))
@@ -131,30 +149,102 @@ def desenhar_final():
     rect_patinha = patinha.get_rect(center=(largura_tela // 2, 350))
     tela.blit(patinha, rect_patinha)
 
+def desenhar_recordes():
+    tela.fill((131, 40, 101))
+
+    texto_pontuacoes = fonte_pontuacoes.render("Pontuações máximas", True, (159, 210, 255))
+    tela.blit(texto_pontuacoes, texto_pontuacoes.get_rect(center=(largura_tela // 2, 150)))
+
+    tela.blit(recordes_img, recordes_rect)
+
+    facil = fonte_recordes.render(
+        f"{formatar_tempo(recordes[0])}", True, (0, 0, 0))
+
+    medio = fonte_recordes.render(
+        f"{formatar_tempo(recordes[1])}", True, (0, 0, 0))
+
+    dificil = fonte_recordes.render(
+        f"{formatar_tempo(recordes[2])}", True, (0, 0, 0))
+
+    x_tempo = recordes_rect.centerx - 13
+    y_facil = recordes_rect.top + 40
+    y_medio = recordes_rect.top + 135
+    y_dificil = recordes_rect.top + 225
+
+    tela.blit(facil, facil.get_rect(center=(x_tempo, y_facil)))
+    tela.blit(medio, medio.get_rect(center=(x_tempo, y_medio)))
+    tela.blit(dificil, dificil.get_rect(center=(x_tempo, y_dificil)))
+
+def formatar_tempo(tempo_total_em_mili):
+    if tempo_total_em_mili is None:
+        return "--:--:---"
+    
+    tempo_em_segundos = tempo_total_em_mili // 1000
+    resto_em_mili = tempo_total_em_mili % 1000
+
+    minutos = tempo_em_segundos // 60
+    resto_em_seg = tempo_em_segundos % 60
+
+    return f"{minutos:02d}:{resto_em_seg:02d}:{resto_em_mili:03d}"
+
+def salvar_recordes():
+    global recordes
+    with open("recordes.csv", "w") as arquivo:
+        arquivo.write(",".join(map(str, recordes)))
+    
+def converter_texto_para_recorde(texto):
+    try:
+        return int(texto)
+    except ValueError:
+        return None
+
+def carregar_recordes():
+    global recordes
+    try:
+        with open("recordes.csv", "r") as arquivo:
+            linha = arquivo.readline()
+            recordes = list(map(converter_texto_para_recorde, linha.split(",")))
+            if len(recordes) < 3:
+                recordes = [None, None, None]
+    except FileNotFoundError:
+        pass
+
+carregar_recordes()
+
 while True:
     tempo = pygame.time.get_ticks()
     pos_mouse = pygame.mouse.get_pos()
     
     for event in pygame.event.get():
+
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
 
         if estado_tela == tela_menu and event.type == MOUSEBUTTONDOWN:
-            if botao_facil.collidepoint(event.pos): 
-                nivel = 1
-            elif botao_medio.collidepoint(event.pos): 
-                nivel = 2
-            elif botao_dificil.collidepoint(event.pos): 
-                nivel = 3
-            else: 
-                continue
+    
+            if (botao_facil.collidepoint(event.pos) or
+            botao_medio.collidepoint(event.pos) or
+            botao_dificil.collidepoint(event.pos)):
 
-            linhas, colunas, texto_nivel, lista_ids, cartas_viradas, cartas_escolhidas = iniciar_jogo(nivel)
-            estado_tela = tela_jogo
+                if botao_facil.collidepoint(event.pos):
+                    nivel = 1
+                elif botao_medio.collidepoint(event.pos):
+                    nivel = 2
+                else:
+                    nivel = 3
+
+                linhas, colunas, texto_nivel, lista_ids, cartas_viradas, cartas_escolhidas = iniciar_jogo(nivel)
+                tempo_inicio = pygame.time.get_ticks()
+                estado_tela = tela_jogo
+
+            elif medalha_rect.collidepoint(event.pos):
+                estado_tela = tela_recordes
 
         elif estado_tela == tela_jogo and event.type == MOUSEBUTTONDOWN:
-            desenhar_botao_voltar()
+
+            desenhar_botao_voltar((218, 232, 244))
+
             if botao_voltar.collidepoint(event.pos):
                 estado_tela = tela_menu
 
@@ -180,6 +270,10 @@ while True:
         elif estado_tela == tela_final and event.type == MOUSEBUTTONDOWN:
             if botao_reiniciar.collidepoint(event.pos):
                 estado_tela = tela_menu
+
+        elif estado_tela == tela_recordes and event.type == MOUSEBUTTONDOWN:
+            if botao_voltar.collidepoint(event.pos):
+                estado_tela = tela_menu
     
     if len(cartas_escolhidas) == 2 and tempo > timer_espera:
         id1 = lista_ids[cartas_escolhidas[0]]
@@ -190,6 +284,13 @@ while True:
             cartas_resolvidas[cartas_escolhidas[1]] = True
 
             if all(cartas_resolvidas):
+                tempo_fim = pygame.time.get_ticks()
+                tempo_total = (tempo_fim - tempo_inicio)
+
+                if recordes[nivel - 1] is None or tempo_total < recordes[nivel-1]:
+                    recordes[nivel-1] = tempo_total
+                    salvar_recordes()
+
                 estado_tela = tela_final
 
         else:
@@ -197,7 +298,6 @@ while True:
             cartas_viradas[cartas_escolhidas[1]] = False
         
         cartas_escolhidas = []
-
 
     if estado_tela == tela_menu:
         desenhar_menu()
@@ -219,9 +319,7 @@ while True:
             texto_cronometro= fonte_cronometro.render(f"{tempo_visto:.1f}s", True, (120, 40, 90))
             tela.blit(texto_cronometro, texto_cronometro.get_rect(center=(largura_tela // 2, 640)))
 
-
         for i in range(len(lista_ids)):
-
             if cartas_resolvidas[i]: continue 
 
             col = i % colunas
@@ -239,6 +337,10 @@ while True:
     elif estado_tela == tela_final:
         desenhar_final()
         botao_reiniciar = botao_novamente()
+
+    elif estado_tela == tela_recordes:
+        desenhar_recordes()
+        botao_voltar = desenhar_botao_voltar((159, 210, 255))
 
     pygame.display.update()
     clock.tick(60)
