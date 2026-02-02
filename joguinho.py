@@ -5,6 +5,12 @@ import sys
 
 pygame.init()
 
+pygame.mixer.init()
+pygame.mixer.music.load("sons/bright_stars.ogg")
+pygame.mixer.music.set_volume(0.5)
+pygame.mixer.music.play(-1)
+som_ligado = True
+
 tempo = 0
 recordes = [None, None, None]
 
@@ -21,8 +27,8 @@ altura_botao = 60
 largura_botao = 220
 x_inicial_botao = 90
 botao_facil = pygame.Rect(x_inicial_botao, 315, largura_botao, altura_botao)
-botao_medio = pygame.Rect(x_inicial_botao, 405, largura_botao, altura_botao)
-botao_dificil = pygame.Rect(x_inicial_botao, 485, largura_botao, altura_botao)
+botao_medio = pygame.Rect(x_inicial_botao, 395, largura_botao, altura_botao)
+botao_dificil = pygame.Rect(x_inicial_botao, 475, largura_botao, altura_botao)
 
 tela = pygame.display.set_mode((largura_tela, altura_tela))
 pygame.display.set_caption("Cat's Memory")
@@ -47,13 +53,20 @@ logo_img = pygame.image.load("imagens/logo.png").convert_alpha()
 logo_img = pygame.transform.smoothscale(logo_img, (230, 230))
 logo_rect = logo_img.get_rect(center=(largura_tela // 2, 170))
 
-medalha_img = pygame.image.load("imagens/medalha.png").convert_alpha()
-medalha_img = pygame.transform.scale(medalha_img, (50, 50))
-medalha_rect = medalha_img.get_rect(topleft=(8, 215))
-
 recordes_img = pygame.image.load("imagens/recordes.png").convert_alpha()
 recordes_img = pygame.transform.smoothscale(recordes_img, (250, 250))
 recordes_rect = recordes_img.get_rect(center=(largura_tela // 2, 350))
+
+medalha_img = pygame.image.load("imagens/medalha.png").convert_alpha()
+medalha_img = pygame.transform.scale(medalha_img, (52, 52))
+medalha_rect = medalha_img.get_rect(topleft=(8, 213))
+
+som_on_img = pygame.image.load("imagens/som_ligado.png").convert_alpha()
+som_on_img = pygame.transform.scale(som_on_img, (50, 50))
+som_off_img = pygame.image.load("imagens/som_desligado.png").convert_alpha()
+som_off_img = pygame.transform.scale(som_off_img, (50, 50))
+som_rect_menu = som_on_img.get_rect(topleft=(12, 270))
+som_rect_jogo = som_on_img.get_rect(topright=(380, 7))
 
 tela_menu = 0
 tela_jogo = 1
@@ -138,6 +151,12 @@ def desenhar_menu():
 
     tela.blit(medalha_img, medalha_rect)
 
+def desenhar_botao_som(rect):
+    if som_ligado:
+        tela.blit(som_on_img, rect)
+    else:
+        tela.blit(som_off_img, rect)
+
 def desenhar_final():
     tela.fill((159,210,255))
 
@@ -221,8 +240,19 @@ while True:
             pygame.quit()
             sys.exit()
 
+        if event.type == MOUSEBUTTONDOWN:
+            if estado_tela == tela_menu and som_rect_menu.collidepoint(event.pos):
+                som_ligado = not som_ligado
+
+            elif estado_tela == tela_jogo and som_rect_jogo.collidepoint(event.pos):
+                som_ligado = not som_ligado
+
+            if som_ligado:
+                pygame.mixer.music.unpause()
+            else:
+                pygame.mixer.music.pause()
+
         if estado_tela == tela_menu and event.type == MOUSEBUTTONDOWN:
-    
             if (botao_facil.collidepoint(event.pos) or
             botao_medio.collidepoint(event.pos) or
             botao_dificil.collidepoint(event.pos)):
@@ -301,12 +331,13 @@ while True:
 
     if estado_tela == tela_menu:
         desenhar_menu()
+        desenhar_botao_som(som_rect_menu)
 
     elif estado_tela == tela_jogo:
 
         tela.fill((218, 232, 244))
         texto_superficie = fonte_nivel.render(texto_nivel, True, (226, 139, 197))
-        tela.blit(texto_superficie, texto_superficie.get_rect(center=(largura_tela // 2, 95)))
+        tela.blit(texto_superficie, texto_superficie.get_rect(center=(largura_tela // 2, 100)))
 
         botao_voltar = pygame.Rect(6, 8, 130, 40)
         pygame.draw.rect(tela, (159, 210, 255), botao_voltar, border_radius=8)
@@ -333,6 +364,8 @@ while True:
                 
             else:
                 pygame.draw.rect(tela, (226, 139, 197), (x, y, tamanho_carta, tamanho_carta), border_radius=8)
+
+        desenhar_botao_som(som_rect_jogo)
 
     elif estado_tela == tela_final:
         desenhar_final()
