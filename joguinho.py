@@ -61,6 +61,16 @@ medalha_img = pygame.image.load("imagens/medalha.png").convert_alpha()
 medalha_img = pygame.transform.scale(medalha_img, (52, 52))
 medalha_rect = medalha_img.get_rect(topleft=(8, 213))
 
+bg_menu = pygame.image.load("imagens/fundomenu.png").convert_alpha()
+bg_menu = pygame.transform.scale(bg_menu, (largura_tela, altura_tela))
+
+bg_final = pygame.image.load("imagens/fundofinal.png").convert_alpha()
+bg_final = pygame.transform.scale(bg_final, (largura_tela, altura_tela))
+
+bg_recordes = pygame.image.load("imagens/fundorecordes.png").convert_alpha()
+bg_recordes = pygame.transform.scale(bg_recordes, (largura_tela, altura_tela))
+
+
 som_on_img = pygame.image.load("imagens/som_ligado.png").convert_alpha()
 som_on_img = pygame.transform.scale(som_on_img, (50, 50))
 som_off_img = pygame.image.load("imagens/som_desligado.png").convert_alpha()
@@ -124,7 +134,7 @@ def desenhar_botao_voltar(cor):
     return botao_voltar
 
 def botao_novamente():
-    botao_reiniciar = pygame.Rect(90, 580, 200, 60)
+    botao_reiniciar = pygame.Rect(100, 580, 200, 60)
     pygame.draw.rect(tela, (131, 40, 101), botao_reiniciar, border_radius = 8)
 
     texto = fonte_novamente.render("Jogar novamente", True, (255, 255, 255))
@@ -133,7 +143,7 @@ def botao_novamente():
     return botao_reiniciar
 
 def desenhar_menu():
-    tela.fill((226, 139, 197))
+    tela.blit(bg_menu, (0, 0))
 
     pygame.draw.rect(tela, (218, 232, 244), botao_facil, border_radius = 8)
     pygame.draw.rect(tela, (159, 210, 255), botao_medio, border_radius= 8)
@@ -158,10 +168,10 @@ def desenhar_botao_som(rect):
         tela.blit(som_off_img, rect)
 
 def desenhar_final():
-    tela.fill((159,210,255))
+    tela.blit(bg_final, (0, 0))
 
     texto_bom = fonte_bom.render("Muito bom!", True, (131, 40, 101))
-    tela.blit(texto_bom, texto_bom.get_rect(center=(largura_tela // 2, 95)))
+    tela.blit(texto_bom, texto_bom.get_rect(center=(largura_tela // 2, 110)))
 
     patinha = pygame.image.load("imagens/patinha.png").convert_alpha()
     patinha = pygame.transform.scale(patinha, (400, 400))
@@ -169,7 +179,7 @@ def desenhar_final():
     tela.blit(patinha, rect_patinha)
 
 def desenhar_recordes():
-    tela.fill((131, 40, 101))
+    tela.blit(bg_recordes, (0, 0))
 
     texto_pontuacoes = fonte_pontuacoes.render("Pontuações máximas", True, (159, 210, 255))
     tela.blit(texto_pontuacoes, texto_pontuacoes.get_rect(center=(largura_tela // 2, 150)))
