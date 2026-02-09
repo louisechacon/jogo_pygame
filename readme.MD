@@ -7,3 +7,11 @@ O Cat's Memory é um jogo da memória em Python com a temática de gatinhos e é
 
 Créditos:
 Música "Bright Stars" - autoria de Gena Sealov. Som adquirido por meio do site OpenGameArt.org
+
+Requisitos para rodar o Cat's Memory na sua máquina:
+
+Instalar pygame
+
+```bash
+python -m pip install pygame
+```
