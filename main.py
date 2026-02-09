@@ -20,10 +20,6 @@ recordes = dados.carregar_recordes()
 
 clock = pygame.time.Clock()
 
-botao_facil = pygame.Rect(config.X_INICIAL_BOTAO, 315, config.LARGURA_BOTAO, config.ALTURA_BOTAO)
-botao_medio = pygame.Rect(config.X_INICIAL_BOTAO, 395, config.LARGURA_BOTAO, config.ALTURA_BOTAO)
-botao_dificil = pygame.Rect(config.X_INICIAL_BOTAO, 475, config.LARGURA_BOTAO, config.ALTURA_BOTAO)
-
 tela = pygame.display.set_mode((config.LARGURA_TELA, config.ALTURA_TELA))
 pygame.display.set_caption("Cat's Memory")
 
@@ -143,8 +139,7 @@ while True:
             if len(cartas_escolhidas) < 2 and tempo > timer_espera:
                 for i in range(len(lista_ids)):
 
-                    if cartas_resolvidas[i]: continue 
-
+                    if cartas_resolvidas[i]: continue
                     col = i % colunas
                     lin = i // colunas
                     x = config.X_INICIAL_CARTA + col * (tamanho_carta + config.ESPACO_CARTAS)
