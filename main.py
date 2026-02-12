@@ -8,23 +8,17 @@ import recursos
 import interface
 
 pygame.init()
+clock = pygame.time.Clock()
 
-pygame.mixer.init()
-pygame.mixer.music.load("sons/bright_stars.ogg")
-pygame.mixer.music.set_volume(0.5)
+recursos.carregar_sons()
 pygame.mixer.music.play(-1)
 som_ligado = True
 
 tempo = 0
 recordes = dados.carregar_recordes()
 
-clock = pygame.time.Clock()
-
 tela = pygame.display.set_mode((config.LARGURA_TELA, config.ALTURA_TELA))
 pygame.display.set_caption("Cat's Memory")
-
-recursos.carregar_sons()
-pygame.mixer.music.play(-1)
 
 dicionario_imagens = recursos.carregar_imagens()
 dicionario_fontes = recursos.carregar_fontes()
@@ -36,16 +30,6 @@ botao_dificil = pygame.Rect(config.X_INICIAL_BOTAO, 475, config.LARGURA_BOTAO, c
 som_rect_menu = dicionario_imagens['som_on'].get_rect(topleft=(12, 270))
 som_rect_jogo = dicionario_imagens['som_on'].get_rect(topright=(380, 7))
 medalha_rect = dicionario_imagens['medalha'].get_rect(topleft=(8, 213))
-
-pygame.font.init()
-fonte_nivel = pygame.font.SysFont(None, 60)
-fonte_botao = pygame.font.SysFont(None, 40)
-fonte_titulo = pygame.font.SysFont(None, 56)
-fonte_cronometro = pygame.font.SysFont(None, 30)
-fonte_bom = pygame.font.SysFont(None, 60)
-fonte_novamente = pygame.font.SysFont(None, 30)
-fonte_recordes = pygame.font.SysFont(None, 30)
-fonte_pontuacoes = pygame.font.SysFont(None, 40)
 
 estado_tela = config.TELA_MENU
 
@@ -187,22 +171,25 @@ while True:
         cartas_escolhidas = []
 
     if estado_tela == config.TELA_MENU:
+
         interface.desenhar_menu(tela, dicionario_imagens, dicionario_fontes, (botao_facil, botao_medio, botao_dificil))
         interface.desenhar_botao_som(tela, dicionario_imagens, som_rect_menu, som_ligado)
 
     elif estado_tela == config.TELA_JOGO:
         tela.fill((218, 232, 244))
+        texto_superficie = dicionario_fontes['nivel'].render(texto_nivel, True, (226, 139, 197))
+        tela.blit(texto_superficie, texto_superficie.get_rect(center=(config.LARGURA_TELA // 2, 100)))
         botao_voltar = interface.desenhar_botao_voltar(tela, dicionario_fontes, (159, 210, 255))
         interface.desenhar_botao_som(tela, dicionario_imagens, som_rect_jogo, som_ligado)
 
         if len(cartas_escolhidas) == 2 and tempo <= timer_espera:
             tempo_restante = (timer_espera - tempo) / 1000
             tempo_visto = 1.0 - tempo_restante 
-            texto_cronometro= fonte_cronometro.render(f"{tempo_visto:.1f}s", True, (120, 40, 90))
+            texto_cronometro= dicionario_fontes['cronometro'].render(f"{tempo_visto:.1f}s", True, (120, 40, 90))
             tela.blit(texto_cronometro, texto_cronometro.get_rect(center=(config.LARGURA_TELA // 2, 640)))
 
         for i in range(len(lista_ids)):
-            if cartas_resolvidas[i]: continue 
+            if cartas_resolvidas[i]: continue
 
             col = i % colunas
             lin = i // colunas
