@@ -20,24 +20,24 @@ Requisitos:
 1. Clone o repositório
 
 ```bash
-    git clone https://github.com/louisechacon/jogo_pygame
+git clone https://github.com/louisechacon/jogo_pygame
 ```
 
 2. Navegue até a pasta do projeto
 
 ```bash
-    cd jogo_pygame 
+cd jogo_pygame 
 ```
 
 3. Criar ambiente virtual
 
 ```bash
-    python -m venv .venv 
+python -m venv .venv 
 ```
 
 4. Ativar ambiente virtual
 ```bash
-    .\.venv\Scripts\activate
+.\.venv\Scripts\activate
 ```
 
 5. Instale o Pygame
