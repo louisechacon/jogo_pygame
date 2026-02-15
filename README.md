@@ -45,3 +45,9 @@ python -m venv .venv
 ```bash
 python -m pip install pygame
 ```
+
+## Iniciar o jogo
+
+```bash
+python main.py
+```
